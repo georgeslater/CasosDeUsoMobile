@@ -1,0 +1,20 @@
+C:\Users\George\Documents\NetBeansProjects\CasosDeUso\bin\classes.dex : \
+C:\Users\George\Documents\NetBeansProjects\CasosDeUso\bin\classes\com\example\android\BuildConfig.class \
+C:\Users\George\Documents\NetBeansProjects\CasosDeUso\bin\classes\com\example\android\CargarImagenes$RequestTask.class \
+C:\Users\George\Documents\NetBeansProjects\CasosDeUso\bin\classes\com\example\android\CargarImagenes.class \
+C:\Users\George\Documents\NetBeansProjects\CasosDeUso\bin\classes\com\example\android\dao\ImagenesDao.class \
+C:\Users\George\Documents\NetBeansProjects\CasosDeUso\bin\classes\com\example\android\Imagen.class \
+C:\Users\George\Documents\NetBeansProjects\CasosDeUso\bin\classes\com\example\android\ImagenesAdapter.class \
+C:\Users\George\Documents\NetBeansProjects\CasosDeUso\bin\classes\com\example\android\Login$RequestTask.class \
+C:\Users\George\Documents\NetBeansProjects\CasosDeUso\bin\classes\com\example\android\Login.class \
+C:\Users\George\Documents\NetBeansProjects\CasosDeUso\bin\classes\com\example\android\R$attr.class \
+C:\Users\George\Documents\NetBeansProjects\CasosDeUso\bin\classes\com\example\android\R$color.class \
+C:\Users\George\Documents\NetBeansProjects\CasosDeUso\bin\classes\com\example\android\R$drawable.class \
+C:\Users\George\Documents\NetBeansProjects\CasosDeUso\bin\classes\com\example\android\R$id.class \
+C:\Users\George\Documents\NetBeansProjects\CasosDeUso\bin\classes\com\example\android\R$layout.class \
+C:\Users\George\Documents\NetBeansProjects\CasosDeUso\bin\classes\com\example\android\R$string.class \
+C:\Users\George\Documents\NetBeansProjects\CasosDeUso\bin\classes\com\example\android\R.class \
+C:\Users\George\Documents\NetBeansProjects\CasosDeUso\bin\classes\com\example\android\util\Parser.class \
+C:\Users\George\Documents\NetBeansProjects\CasosDeUso\bin\classes\com\example\android\util\SQLiteHelper.class \
+C:\Users\George\Documents\NetBeansProjects\CasosDeUso\bin\classes\com\example\android\VerImagen.class \
+C:\Users\George\Documents\NetBeansProjects\CasosDeUso\bin\dexedLibs\commons-codec-1.8-b71d0dd6975d3b257adf49f2a2a9e686.jar \
