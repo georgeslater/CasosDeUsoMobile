@@ -79,17 +79,20 @@ public class ImagenesDao {
     
     String ruta = cursor.getString(1);
     
+    Log.d("GEORGE", ruta);
+    
     String titulo = cursor.getString(2);
     
     imagen.setTitulo(titulo);
     
     if(ruta != null){
         
-        String nombreArchivo = titulo != null? titulo: "CasoDeUso";       
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-        Bitmap bitmap = BitmapFactory.decodeFile(Environment.getExternalStorageDirectory()+"/"+nombreArchivo+".png", options);
-        imagen.setImagen(bitmap);
+        Log.d("GEORGE ENV", Environment.getExternalStorageDirectory().toString());
+        Bitmap bitmap = BitmapFactory.decodeFile(ruta, options);
+        Log.d("GEORGE", bitmap.toString());
+        imagen.setImagen(bitmap);        
     }
     
     imagen.setFechaCreada(cursor.getString(3));

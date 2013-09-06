@@ -5,6 +5,8 @@
 package com.example.android;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.ImageView;
@@ -21,10 +23,16 @@ public class VerImagen extends Activity{
     public void onCreate(Bundle icicle) {
         
         super.onCreate(icicle);
+        
+        setContentView(R.layout.imagen);
 
-        //outputIv = (ImageView) findViewById(R.id.imageView1);
-        //outputIv.setImageBitmap(icicle.);
-        outputIv.setBackgroundColor(Color.WHITE);
+        if(getIntent().hasExtra("byteArray")) {
+            
+            Bitmap b = BitmapFactory.decodeByteArray(getIntent().getByteArrayExtra("byteArray"),0,getIntent().getByteArrayExtra("byteArray").length);
+            outputIv = (ImageView) findViewById(R.id.outputIv);
+            outputIv.setImageBitmap(b);
+            outputIv.setBackgroundColor(Color.WHITE);
+        }
     }
     
     /**

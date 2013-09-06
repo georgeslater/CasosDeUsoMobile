@@ -1,5 +1,7 @@
 C:\Users\George\Documents\NetBeansProjects\CasosDeUso\bin\classes.dex : \
 C:\Users\George\Documents\NetBeansProjects\CasosDeUso\bin\classes\com\example\android\BuildConfig.class \
+C:\Users\George\Documents\NetBeansProjects\CasosDeUso\bin\classes\com\example\android\CargarImagenes$CargarImagenesDeBD$1.class \
+C:\Users\George\Documents\NetBeansProjects\CasosDeUso\bin\classes\com\example\android\CargarImagenes$CargarImagenesDeBD.class \
 C:\Users\George\Documents\NetBeansProjects\CasosDeUso\bin\classes\com\example\android\CargarImagenes$RequestTask.class \
 C:\Users\George\Documents\NetBeansProjects\CasosDeUso\bin\classes\com\example\android\CargarImagenes.class \
 C:\Users\George\Documents\NetBeansProjects\CasosDeUso\bin\classes\com\example\android\dao\ImagenesDao.class \
