@@ -47,7 +47,7 @@ public class Login extends Activity
         if(usuarioText != null && !usuarioText.isEmpty() && contraseniaText != null && !contraseniaText.isEmpty()){
             
             loginBtn.setText("Procesando...");
-            new RequestTask(v).execute("http://10.0.2.2:8080/CasosDeUso5/webresources/casosdeusowsport/getusuarioid?usuario="+usuarioText+"&contrasenia="+contraseniaText);
+            new RequestTask(v).execute(Constantes.LOGUEARSE_URL+"?"+Constantes.USUARIO_PARAM+"="+usuarioText+"&"+Constantes.CONTRASENIA_PARAM+"="+contraseniaText);
         }
     }
 

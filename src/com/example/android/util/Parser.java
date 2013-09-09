@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Base64;
 import android.util.Log;
+import com.example.android.Constantes;
 import com.example.android.Imagen;
 import java.io.IOException;
 import java.io.StringReader;
@@ -74,7 +75,7 @@ public class Parser {
 
         for (int k = 0; k < nodeList.getLength(); k++) {
 
-            Node node = nodeList.item(0);
+            Node node = nodeList.item(k);
             Log.d("miaouw", node.getNodeName());
 
             Imagen img = new Imagen();
@@ -82,7 +83,8 @@ public class Parser {
             for (int i = 0; i < node.getChildNodes().getLength(); i++) {
 
                 Node temp = node.getChildNodes().item(i);
-                Log.d("miaouw", temp.getNodeName());
+                Log.d(Constantes.CUSTOM_LOG_TAG, "NODE NAME: "+temp.getNodeName());
+                Log.d(Constantes.CUSTOM_LOG_TAG, "NODE TEXT CONTENT: "+temp.getTextContent());
 
                 if (temp.getNodeName().equalsIgnoreCase("fechaCreada")) {
 

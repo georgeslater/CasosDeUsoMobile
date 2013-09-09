@@ -315,8 +315,10 @@ public class CargarImagenes extends Activity {
             for (Imagen i : imgs) {
 
                 Log.d(Constantes.CUSTOM_LOG_TAG, i.getImagen().toString());
-                i.setEsNuevo(true);
-
+                
+                Log.d(Constantes.CUSTOM_LOG_TAG, "TITULO: "+i.getTitulo());
+                Log.d(Constantes.CUSTOM_LOG_TAG, "FECHA: "+i.getFechaCreada());
+                
                 if (i.getImagen() != null) {
 
                     Log.d(Constantes.CUSTOM_LOG_TAG, "IMAGE NOT NULL");
@@ -334,7 +336,6 @@ public class CargarImagenes extends Activity {
                             String timestamp = tsLong.toString();
                             File f = new File(sdcard, nombreArchivo + timestamp + ".png");
                             FileOutputStream out = new FileOutputStream(f);
-                            i.getImagen().compress(Bitmap.CompressFormat.PNG, 90, out);
                             Log.d("FILE PATH: ", "" + f.getAbsolutePath());
                             imgDao.open();
                             imgDao.createImagen(f.getPath(), i.getTitulo(), i.getFechaCreada());
