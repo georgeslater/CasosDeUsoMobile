@@ -14,6 +14,7 @@ public class Imagen {
   
     private String fechaCreada;
     private Bitmap imagen;
+    private String imagenPath;
     private String titulo;
     private Long id;
     private Boolean esNuevo;
@@ -100,5 +101,19 @@ public class Imagen {
     @Override
     public String toString() {
         return this.getTitulo() != null? this.getTitulo(): "Caso De Uso";
+    }
+
+    /**
+     * @return the imagenPath
+     */
+    public String getImagenPath() {
+        return imagenPath;
+    }
+
+    /**
+     * @param imagenPath the imagenPath to set
+     */
+    public void setImagenPath(String imagenPath) {
+        this.imagenPath = imagenPath;
     }
  }

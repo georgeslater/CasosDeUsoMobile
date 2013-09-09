@@ -5,7 +5,6 @@
 package com.example.android;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
@@ -21,6 +20,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 import com.example.android.dao.ImagenesDao;
 import com.example.android.util.Parser;
 import java.io.ByteArrayOutputStream;
@@ -51,13 +51,13 @@ public class CargarImagenes extends Activity {
     private ProgressBar progressBar;
     private Button botonSync;
     private TextView textoCargando;
-    
+
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
 
         Bundle bundle = getIntent().getExtras();
-        usuarioId = bundle.getInt("usuarioId");
+        usuarioId = bundle.getInt(Constantes.USUARIO_ID_PARAM);
         setContentView(R.layout.misimagenes);
 
         imgDao = new ImagenesDao(this);
@@ -66,31 +66,29 @@ public class CargarImagenes extends Activity {
         imagenListView = (ListView) findViewById(R.id.imagenesListview);
         botonSync = (Button) findViewById(R.id.botonSync);
         textoCargando = (TextView) findViewById(R.id.textCargando);
-        
+
         botonSync.setVisibility(Button.GONE);
         imagenListView.setVisibility(ListView.GONE);
         progressBar.setVisibility(ProgressBar.VISIBLE);
         textoCargando.setVisibility(TextView.VISIBLE);
-        
+
         new CargarImagenesDeBD().execute();
     }
 
-    public static Bitmap scaleDownBitmap(Bitmap photo, int newHeight, Context context) {
-
-        final float densityMultiplier = context.getResources().getDisplayMetrics().density;
-
-        int h = (int) (newHeight * densityMultiplier);
-        int w = (int) (h * photo.getWidth() / ((double) photo.getHeight()));
-
-        photo = Bitmap.createScaledBitmap(photo, w, h, true);
-
-        return photo;
+    @Override
+    public void onBackPressed() {
     }
 
     public void onClickBtn(View v) {
+        
+        if(usuarioId != 0){
+        
+            Log.d("GEORGE USER ID: ", "" + usuarioId);
+            botonSync.setText(getString(R.string.procesando));
+            botonSync.setClickable(false);
 
-        Log.d("GEORGE USER ID: ", "" + usuarioId);
-        new RequestTask(v).execute("http://10.0.2.2:8080/CasosDeUso5/webresources/casosdeusowsport/getimagenes?usuarioId=" + usuarioId);
+            new RequestTask(v).execute(Constantes.SYNC_IMAGENES_URL + usuarioId);
+        }
     }
 
     /**
@@ -181,44 +179,42 @@ public class CargarImagenes extends Activity {
 
         int myProgress;
         ArrayAdapter<Imagen> adapter;
-        
+
         @Override
-        protected void onPostExecute(Void result){
-            
+        protected void onPostExecute(Void result) {
+
             adapter = new ArrayAdapter<Imagen>(CargarImagenes.this, R.layout.misimagenestabla, R.id.titulo, imgList);
 
             getImagenListView().setAdapter(adapter);
-            
+
             imagenListView.setOnItemClickListener(new OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                    Log.d("GEORGE", "CLICKITYBOBS");
-
                     Imagen imagenSeleccionado = adapter.getItem(position);
 
-                    if (imagenSeleccionado.getImagen() != null) {
+                    Log.d(Constantes.CUSTOM_LOG_TAG, "IMAGE PATH ES: " + imagenSeleccionado.getImagenPath());
+
+                    if (imagenSeleccionado.getImagenPath() != null) {
 
                         Intent intent = new Intent(CargarImagenes.this, VerImagen.class);
-                        ByteArrayOutputStream bs = new ByteArrayOutputStream();
-                        imagenSeleccionado.getImagen().compress(Bitmap.CompressFormat.PNG, 50, bs);
-                        intent.putExtra("byteArray", bs.toByteArray());
+                        intent.putExtra("imagenPath", imagenSeleccionado.getImagenPath());
                         startActivity(intent);
                     }
 
                 }
             });
-            
+
             progressBar.setProgress(100);
-            
+
             adapter.notifyDataSetChanged();
             imagenListView.setVisibility(ListView.VISIBLE);
             progressBar.setVisibility(ProgressBar.GONE);
             botonSync.setVisibility(Button.VISIBLE);
             textoCargando.setVisibility(TextView.GONE);
-            
+
         }
-        
+
         @Override
         protected void onPreExecute() {
             myProgress = 0;
@@ -230,14 +226,14 @@ public class CargarImagenes extends Activity {
             imgList = new ArrayList<Imagen>();
 
             imgDao.open();
-            
+
             progressBar.setProgress(25);
-            
+
             //Sacar imagenes de la tarjeta SD
             List<Imagen> imagenes = imgDao.getAllImagenes();
             imgList.addAll(imagenes);
-            Log.d("GEORGE Imagenes: ", "" + imagenes.toString());
-            
+            Log.d(Constantes.CUSTOM_LOG_TAG, "Imagenes: " + imagenes.toString());
+
             progressBar.setProgress(75);
 
             imgDao.close();
@@ -249,7 +245,6 @@ public class CargarImagenes extends Activity {
 
         @Override
         protected void onProgressUpdate(Integer... values) {
-            // TODO Auto-generated method stub
             progressBar.setProgress(values[0]);
         }
     }
@@ -272,30 +267,32 @@ public class CargarImagenes extends Activity {
                 StatusLine statusLine = response.getStatusLine();
                 Log.d("info", statusLine.toString());
                 if (statusLine.getStatusCode() == HttpStatus.SC_OK) {
-                    ByteArrayOutputStream out = new ByteArrayOutputStream();
+                    ByteArrayOutputStream out = new ByteArrayOutputStream();                    
                     response.getEntity().writeTo(out);
                     out.close();
                     responseString = out.toString();
                 } else {
-                    //Closes the connection.
+                    //Cierra la conexion.
                     response.getEntity().getContent().close();
+                    //hubo un error de Web Service
                     throw new IOException(statusLine.getReasonPhrase());
                 }
             } catch (ClientProtocolException e) {
-                Log.d("OH CRIKEY", e.toString());
+                Toast.makeText(getApplicationContext(), getString(R.string.error_sincronizar), Toast.LENGTH_LONG).show();
             } catch (IOException e) {
-                Log.d("OH CRIKEY", e.toString());
+                Toast.makeText(getApplicationContext(), getString(R.string.error_sincronizar), Toast.LENGTH_LONG).show();
             }
-            Log.d("info", responseString);
+            Log.d(Constantes.CUSTOM_LOG_TAG, responseString);
             return responseString;
         }
 
         @Override
         protected void onPostExecute(String result) {
 
-            //super.onPostExecute(result);
+            Log.d(Constantes.CUSTOM_LOG_TAG, "RESULT: "+ result);
 
-            Log.d("GEORGE RESULT: ", result);
+            botonSync.setText(getString(R.string.sync_texto));
+            botonSync.setClickable(true);
 
             try {
 
@@ -306,7 +303,8 @@ public class CargarImagenes extends Activity {
                 }
 
             } catch (Exception e) {
-                Log.d("ERROR!!", "" + e.getMessage());
+                Log.e(Constantes.CUSTOM_LOG_TAG, "ERROR!!" + e.getMessage());
+                Toast.makeText(getApplicationContext(), getString(R.string.error_sincronizar), Toast.LENGTH_LONG).show();
             }
         }
 
@@ -316,17 +314,22 @@ public class CargarImagenes extends Activity {
 
             for (Imagen i : imgs) {
 
-                Log.d("GEORGE1", i.getImagen().toString());
+                Log.d(Constantes.CUSTOM_LOG_TAG, i.getImagen().toString());
                 i.setEsNuevo(true);
 
                 if (i.getImagen() != null) {
 
+                    Log.d(Constantes.CUSTOM_LOG_TAG, "IMAGE NOT NULL");
+
                     //ver si SD card es presente
                     if (android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)) {
 
+                        Log.d(Constantes.CUSTOM_LOG_TAG, "SD CARD PRESENT");
+
+
                         try {
                             File sdcard = Environment.getExternalStorageDirectory();
-                            String nombreArchivo = i.getTitulo() != null ? i.getTitulo() : "CasoDeUso";
+                            String nombreArchivo = i.getTitulo() != null ? i.getTitulo().replaceAll(" ", "_") : "CasoDeUso";
                             Long tsLong = System.currentTimeMillis() / 1000;
                             String timestamp = tsLong.toString();
                             File f = new File(sdcard, nombreArchivo + timestamp + ".png");
@@ -335,10 +338,14 @@ public class CargarImagenes extends Activity {
                             Log.d("FILE PATH: ", "" + f.getAbsolutePath());
                             imgDao.open();
                             imgDao.createImagen(f.getPath(), i.getTitulo(), i.getFechaCreada());
+                            Log.d(Constantes.CUSTOM_LOG_TAG, "CREATED " + i.toString());
+                            i.setEsNuevo(true);
+                            i.setImagenPath(f.getPath());
                             imagenesProcesados.add(i);
                             imgDao.close();
                         } catch (FileNotFoundException e) {
-                            Log.e("ERROR: ", "" + e.getMessage());
+                            Log.e(Constantes.CUSTOM_LOG_TAG, "" + e.getMessage());
+                            Toast.makeText(getApplicationContext(), getString(R.string.error_sincronizar), Toast.LENGTH_LONG).show();
                         }
                     }
                 }
@@ -346,8 +353,7 @@ public class CargarImagenes extends Activity {
 
             if (!imagenesProcesados.isEmpty()) {
 
-                imgs.clear();
-                imgs.addAll(imagenesProcesados);
+                imgList.addAll(imagenesProcesados);
                 ((BaseAdapter) imagenListView.getAdapter()).notifyDataSetChanged();
             }
         }

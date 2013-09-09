@@ -26,9 +26,11 @@ public class VerImagen extends Activity{
         
         setContentView(R.layout.imagen);
 
-        if(getIntent().hasExtra("byteArray")) {
+        if(getIntent().hasExtra("imagenPath")) {
             
-            Bitmap b = BitmapFactory.decodeByteArray(getIntent().getByteArrayExtra("byteArray"),0,getIntent().getByteArrayExtra("byteArray").length);
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+            Bitmap b = BitmapFactory.decodeFile(getIntent().getStringExtra("imagenPath"), options);
             outputIv = (ImageView) findViewById(R.id.outputIv);
             outputIv.setImageBitmap(b);
             outputIv.setBackgroundColor(Color.WHITE);

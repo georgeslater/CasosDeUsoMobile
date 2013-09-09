@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Casos De Uso</string>
+    <string name="procesando">Procesando&#8230;</string>
+    <string name="error_sincronizar">No se pudo sincronizar.  Intente mas tarde.</string>
+    <string name="sync_texto">Sync</string>
     <color name="white">#FFFFFF</color>
 </resources>

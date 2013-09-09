@@ -1,6 +1,5 @@
 package com.example.android;
 
-import com.example.android.util.Parser;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -10,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+import com.example.android.util.Parser;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import org.apache.http.HttpResponse;

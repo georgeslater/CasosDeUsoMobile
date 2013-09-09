@@ -16,7 +16,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
     public static final String TABLA_IMAGENES = "imagenes";
     public static final String COLUMN_ID = "_id";
-    public static final String COLUMN_IMAGEN_RUTA = "ruta";
+    public static final String COLUMN_IMAGEN_RUTA = "imagenPath";
     public static final String COLUMN_TITULO = "titulo";
     public static final String COLUMN_FECHA_CREADA = "fechaCreada";
     private static final String DATABASE_NAME = "imagenes.db";

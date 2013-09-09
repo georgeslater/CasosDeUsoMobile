@@ -9,14 +9,11 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.Environment;
 import android.util.Log;
+import com.example.android.Constantes;
 import com.example.android.Imagen;
 import com.example.android.util.SQLiteHelper;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -56,18 +53,16 @@ public class ImagenesDao {
     List<Imagen> imagenes = new ArrayList<Imagen>();
 
     Cursor cursor = database.query(SQLiteHelper.TABLA_IMAGENES,
-        allColumns, null, null, null, null, null);
-    
-    Log.d("GEORGE CURSOR", cursor.toString());
-    
+        allColumns, null, null, null, null, SQLiteHelper.COLUMN_FECHA_CREADA+" DESC");
+        
     cursor.moveToFirst();
     while (!cursor.isAfterLast()) {
       Imagen imagen = cursorToImagen(cursor);
       imagenes.add(imagen);
       cursor.moveToNext();
-      Log.d("GEORGE FOUND IMAGEN", imagen.getTitulo());
+      Log.d(Constantes.CUSTOM_LOG_TAG, imagen.getTitulo());
     }
-    // Make sure to close the cursor
+    // Siempre hay que cerrar el cursor
     cursor.close();
     return imagenes;
   }
@@ -78,27 +73,16 @@ public class ImagenesDao {
     imagen.setId(cursor.getLong(0));
     
     String ruta = cursor.getString(1);
+    imagen.setImagenPath(ruta);
     
-    Log.d("GEORGE", ruta);
+    Log.d(Constantes.CUSTOM_LOG_TAG, ruta);
     
     String titulo = cursor.getString(2);
     
     imagen.setTitulo(titulo);
-    
-    if(ruta != null){
         
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-        Log.d("GEORGE ENV", Environment.getExternalStorageDirectory().toString());
-        Bitmap bitmap = BitmapFactory.decodeFile(ruta, options);
-        Log.d("GEORGE", bitmap.toString());
-        imagen.setImagen(bitmap);        
-    }
-    
     imagen.setFechaCreada(cursor.getString(3));
-    
-    Log.d("GEORGE IN CURSOR METHOD", imagen.toString());
-    
+        
     return imagen;
   }
 }

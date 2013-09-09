@@ -23,11 +23,10 @@ public final class R {
         public static final int btnLogin=0x7f060003;
         public static final int contraseniaInput=0x7f060002;
         public static final int imagenesListview=0x7f060005;
-        public static final int nuevo=0x7f060008;
         public static final int outputIv=0x7f060000;
         public static final int progressBar=0x7f060006;
         public static final int textCargando=0x7f060007;
-        public static final int titulo=0x7f060009;
+        public static final int titulo=0x7f060008;
         public static final int usuarioInput=0x7f060001;
     }
     public static final class layout {
@@ -38,5 +37,8 @@ public final class R {
     }
     public static final class string {
         public static final int app_name=0x7f040000;
+        public static final int error_sincronizar=0x7f040002;
+        public static final int procesando=0x7f040001;
+        public static final int sync_texto=0x7f040003;
     }
 }
