@@ -125,7 +125,7 @@ public class Login extends Activity
             } catch (IOException e) {
                 Log.d("OH CRIKEY", e.toString());
             }
-            Log.d("info", responseString);
+            Log.d("info", ""+responseString);
             return responseString;
         }
 

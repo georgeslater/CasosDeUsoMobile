@@ -29,7 +29,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
@@ -47,6 +49,7 @@ public class CargarImagenes extends Activity {
     private int usuarioId;
     private ImagenesDao imgDao;
     private List<Imagen> imgList;
+    private Map<String, Imagen> imgTituloMapa;
     private ListView imagenListView;
     private ProgressBar progressBar;
     private Button botonSync;
@@ -80,9 +83,9 @@ public class CargarImagenes extends Activity {
     }
 
     public void onClickBtn(View v) {
-        
-        if(usuarioId != 0){
-        
+
+        if (usuarioId != 0) {
+
             Log.d("GEORGE USER ID: ", "" + usuarioId);
             botonSync.setText(getString(R.string.procesando));
             botonSync.setClickable(false);
@@ -224,6 +227,7 @@ public class CargarImagenes extends Activity {
         protected Void doInBackground(Void... params) {
 
             imgList = new ArrayList<Imagen>();
+            imgTituloMapa = new HashMap<String, Imagen>();
 
             imgDao.open();
 
@@ -231,6 +235,12 @@ public class CargarImagenes extends Activity {
 
             //Sacar imagenes de la tarjeta SD
             List<Imagen> imagenes = imgDao.getAllImagenes();
+
+            for (Imagen imm : imagenes) {
+
+                imgTituloMapa.put(imm.getTitulo(), imm);
+            }
+
             imgList.addAll(imagenes);
             Log.d(Constantes.CUSTOM_LOG_TAG, "Imagenes: " + imagenes.toString());
 
@@ -267,7 +277,7 @@ public class CargarImagenes extends Activity {
                 StatusLine statusLine = response.getStatusLine();
                 Log.d("info", statusLine.toString());
                 if (statusLine.getStatusCode() == HttpStatus.SC_OK) {
-                    ByteArrayOutputStream out = new ByteArrayOutputStream();                    
+                    ByteArrayOutputStream out = new ByteArrayOutputStream();
                     response.getEntity().writeTo(out);
                     out.close();
                     responseString = out.toString();
@@ -289,7 +299,7 @@ public class CargarImagenes extends Activity {
         @Override
         protected void onPostExecute(String result) {
 
-            Log.d(Constantes.CUSTOM_LOG_TAG, "RESULT: "+ result);
+            Log.d(Constantes.CUSTOM_LOG_TAG, "RESULT: " + result);
 
             botonSync.setText(getString(R.string.sync_texto));
             botonSync.setClickable(true);
@@ -311,14 +321,15 @@ public class CargarImagenes extends Activity {
         void procesarImagenes(List<Imagen> imgs) {
 
             List<Imagen> imagenesProcesados = new ArrayList<Imagen>();
+            Boolean actualizarDataSet = false;
 
             for (Imagen i : imgs) {
 
                 Log.d(Constantes.CUSTOM_LOG_TAG, i.getImagen().toString());
-                
-                Log.d(Constantes.CUSTOM_LOG_TAG, "TITULO: "+i.getTitulo());
-                Log.d(Constantes.CUSTOM_LOG_TAG, "FECHA: "+i.getFechaCreada());
-                
+
+                Log.d(Constantes.CUSTOM_LOG_TAG, "TITULO: " + i.getTitulo());
+                Log.d(Constantes.CUSTOM_LOG_TAG, "FECHA: " + i.getFechaCreada());
+
                 if (i.getImagen() != null) {
 
                     Log.d(Constantes.CUSTOM_LOG_TAG, "IMAGE NOT NULL");
@@ -328,22 +339,57 @@ public class CargarImagenes extends Activity {
 
                         Log.d(Constantes.CUSTOM_LOG_TAG, "SD CARD PRESENT");
 
-
                         try {
                             File sdcard = Environment.getExternalStorageDirectory();
-                            String nombreArchivo = i.getTitulo() != null ? i.getTitulo().replaceAll(" ", "_") : "CasoDeUso";
-                            Long tsLong = System.currentTimeMillis() / 1000;
-                            String timestamp = tsLong.toString();
-                            File f = new File(sdcard, nombreArchivo + timestamp + ".png");
+                            String nombreArchivo = i.getTitulo().replaceAll(" ", "_");
+
+                            File f = new File(sdcard, nombreArchivo + ".png");
+
+                            if (f.exists()) {
+
+                                Log.d("GEORGE", "exists!!");
+                                Boolean b = f.delete();
+
+                                if (b) {
+
+                                    Log.d("GEORGE", "delete success");
+
+                                    try {
+
+                                        f.createNewFile();
+                                        Log.d("GEORGE", "created new file");
+
+                                    } catch (IOException e) {
+
+                                        Log.e(Constantes.CUSTOM_LOG_TAG, "" + e.getMessage());
+                                    }
+                                } else {
+
+                                    Log.e(Constantes.CUSTOM_LOG_TAG, "no se pudo borrar");
+                                }
+                            }
+
                             FileOutputStream out = new FileOutputStream(f);
-                            Log.d("FILE PATH: ", "" + f.getAbsolutePath());
+                            i.getImagen().compress(Bitmap.CompressFormat.PNG, 90, out);
+                            Log.d("FILE PATH: ", "" + f.getPath());
                             imgDao.open();
-                            imgDao.createImagen(f.getPath(), i.getTitulo(), i.getFechaCreada());
-                            Log.d(Constantes.CUSTOM_LOG_TAG, "CREATED " + i.toString());
-                            i.setEsNuevo(true);
-                            i.setImagenPath(f.getPath());
-                            imagenesProcesados.add(i);
+                            Boolean isUpdate = imgDao.createImagen(f.getPath(), i.getTitulo(), i.getFechaCreada());
+                            Log.d(Constantes.CUSTOM_LOG_TAG, isUpdate ? "UPDATED " + i.toString() : "CREATED " + i.toString());
                             imgDao.close();
+
+                            if (!isUpdate) {
+                                i.setImagenPath(f.getPath());
+                                imagenesProcesados.add(i);
+                            } else {
+                                for (Imagen immm : imgList) {
+
+                                    if (i.getTitulo().equals(immm.getTitulo())) {
+
+                                        immm.setImagenPath(f.getPath());
+                                        actualizarDataSet = true;
+                                    }
+                                }
+                            }
                         } catch (FileNotFoundException e) {
                             Log.e(Constantes.CUSTOM_LOG_TAG, "" + e.getMessage());
                             Toast.makeText(getApplicationContext(), getString(R.string.error_sincronizar), Toast.LENGTH_LONG).show();
@@ -355,6 +401,11 @@ public class CargarImagenes extends Activity {
             if (!imagenesProcesados.isEmpty()) {
 
                 imgList.addAll(imagenesProcesados);
+                actualizarDataSet = true;
+            }
+
+            if (actualizarDataSet) {
+
                 ((BaseAdapter) imagenListView.getAdapter()).notifyDataSetChanged();
             }
         }

@@ -40,14 +40,22 @@ public class ImagenesDao {
     dbHelper.close();
   }
 
-  public void createImagen(String ruta, String titulo, String fechaCreada) {
+  public Boolean createImagen(String ruta, String titulo, String fechaCreada) {
     ContentValues values = new ContentValues();
     values.put(SQLiteHelper.COLUMN_IMAGEN_RUTA, ruta);
     values.put(SQLiteHelper.COLUMN_TITULO, titulo);
     values.put(SQLiteHelper.COLUMN_FECHA_CREADA, fechaCreada.toString());
-    long insertId = database.insert(SQLiteHelper.TABLA_IMAGENES, null,
-        values);
+    Log.d("GEORGE", titulo);
+    long rows = database.update(SQLiteHelper.TABLA_IMAGENES, values, SQLiteHelper.COLUMN_TITULO+"=?", new String[] { titulo });
+    if(rows == 0){
+        Log.d("GEORGE", "0 rows found");
+        database.insertWithOnConflict(SQLiteHelper.TABLA_IMAGENES, null, values, SQLiteDatabase.CONFLICT_IGNORE);
+        return false;
+    }else{
+        return true;
+    }
   }
+  
 
   public List<Imagen> getAllImagenes() {
     List<Imagen> imagenes = new ArrayList<Imagen>();
